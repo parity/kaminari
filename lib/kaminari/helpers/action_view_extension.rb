@@ -124,19 +124,23 @@ module Kaminari
       only_path = params.has_key?(:only_path) ? params[:only_path] : false
 
       output = ""
-
-      if !scope.first_page? && !scope.last_page?
-        # If not first and not last, then output both links.
-        output << '<link rel="next" href="' + url_for(params.merge(param_name => (scope.current_page + 1), :only_path => only_path)) + '"/>'
-        output << '<link rel="prev" href="' + url_for(params.merge(param_name => (scope.current_page - 1), :only_path => only_path)) + '"/>'
-      elsif scope.first_page?
-        # If first page, add next link unless last page.
-        output << '<link rel="next" href="' + url_for(params.merge(param_name => (scope.current_page + 1), :only_path => only_path)) + '"/>' unless scope.last_page?
+      if scope.current_page == 2
+        output << '<link rel="prev" href="' + url_for(:only_path => only_path) + '"/>'
+        # If page == 2 and not last page, then output both links.
+        output << '<link rel="next" href="' + url_for(params.merge(param_name => (scope.current_page + 1), :only_path => only_path)) + '"/>' if !scope.last_page?
       else
-        # If last page, add prev link unless first page.
-        output << '<link rel="prev" href="' + url_for(params.merge(param_name => (scope.current_page - 1), :only_path => only_path)) + '"/>' unless scope.first_page?
+        if !scope.first_page? && !scope.last_page?
+            # If not first and not last, then output both links.
+            output << '<link rel="next" href="' + url_for(params.merge(param_name => (scope.current_page + 1), :only_path => only_path)) + '"/>'
+            output << '<link rel="prev" href="' + url_for(params.merge(param_name => (scope.current_page - 1), :only_path => only_path)) + '"/>'
+        elsif scope.first_page?
+            # If first page, add next link unless last page.
+            output << '<link rel="next" href="' + url_for(params.merge(param_name => (scope.current_page + 1), :only_path => only_path)) + '"/>' unless scope.last_page?
+        else
+            # If last page, add prev link unless first page.
+            output << '<link rel="prev" href="' + url_for(params.merge(param_name => (scope.current_page - 1), :only_path => only_path)) + '"/>' unless scope.first_page?
+        end
       end
-
       output.html_safe
     end
   end
